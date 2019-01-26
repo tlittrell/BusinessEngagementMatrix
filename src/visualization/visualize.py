@@ -1,6 +1,7 @@
 import numpy as np
+from bokeh.models.tickers import FixedTicker
 from bokeh.palettes import viridis
-from bokeh.plotting import ColumnDataSource
+from bokeh.plotting import figure, ColumnDataSource
 
 
 def make_dataset(df, *, noise_low=0.25, noise_high=0.75, naics_digits=2, dot_radius=0.05):
@@ -26,4 +27,25 @@ def make_dataset(df, *, noise_low=0.25, noise_high=0.75, naics_digits=2, dot_rad
 
 
 def make_plot(src):
-    pass
+    TOOLTIPS = [
+        ("index", "$index"),
+        ("Business", "@Business_Name"),
+        ('Business to RVMS Score', "@B2R_score"),
+        ('RVMS to Business Score', "@R2B_score"),
+        ("Industry", "@2017_NAICS_US_Title"),
+        ("NAICS Code", "@NAICS_Code"),
+    ]
+
+    p = figure(title="Business Engagement Matrix", x_axis_label='Business to RVMS', y_axis_label='RVMS to Business',
+               x_range=(0, 6), y_range=(0, 4), tooltips=TOOLTIPS)
+
+    # Ticks
+    p.xaxis.ticker = FixedTicker(ticks=[1, 2, 3, 4, 5])
+    p.yaxis.ticker = FixedTicker(ticks=[1, 2, 3, 4])
+
+    # Grid lines
+    p.xgrid.ticker = FixedTicker(ticks=[1, 2, 3, 4, 5])
+    p.ygrid.ticker = FixedTicker(ticks=[1, 2, 3, 4])
+
+    p.scatter(x='B2R_score_noise', y='R2B_score_noise', fill_color='color', radius='radius',
+              source=src)

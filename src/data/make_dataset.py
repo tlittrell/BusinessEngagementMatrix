@@ -21,10 +21,11 @@ def read_and_merge_data(*, base_path="../../data/raw/"):
 
 
 def make_fake_data(df, *, prob=0.25):
+    n_rows = df.shape[0]
+
     cols = ['R2B_email_sponsorship_promotion', 'R2B_provide_resources', 'R2B_liason', 'B2R_event_participation',
             'B2R_sponsorship_donation', 'B2R_share_business_information', 'B2R_volunteer', 'B2R_use_RVMS_resources']
 
-    n_rows = df.shape[0]
     for col in cols:
         df[col] = np.random.binomial(n=1, p=prob, size=n_rows)
 
