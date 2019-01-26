@@ -1,30 +1,17 @@
-# -*- coding: utf-8 -*-
-import click
-import logging
-from pathlib import Path
-from dotenv import find_dotenv, load_dotenv
+import pandas as pd
 
 
-@click.command()
-@click.argument('input_filepath', type=click.Path(exists=True))
-@click.argument('output_filepath', type=click.Path())
-def main(input_filepath, output_filepath):
-    """ Runs data processing scripts to turn raw data from (../raw) into
-        cleaned data ready to be analyzed (saved in ../processed).
-    """
-    logger = logging.getLogger(__name__)
-    logger.info('making final data set from raw data')
+def read_and_merge_data(*, base_path="../../data/raw/"):
+    df = pd.read_excel(base_path + 'RVMS_Current_Property_and_BIZ_Owner_List - vCurrent (1).xlsx',
+                       sheet_name='Biz & Prop Owner MAIN list')
 
+    naics = pd.read_excel(base_path + 'raw/2-6 digit_2017_Codes.xlsx')
 
-if __name__ == '__main__':
-    log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    logging.basicConfig(level=logging.INFO, format=log_fmt)
+    # Merge business and NAICS data
+    df['NAICS Code'] = df['NAICS Code'].astype(object)
+    df = df.merge(naics, left_on='NAICS Code', right_on='2017 NAICS US   Code', how='inner')
 
-    # not used in this stub but often useful for finding various files
-    project_dir = Path(__file__).resolve().parents[2]
-
-    # find .env automagically by walking up directories until it's found, then
-    # load up the .env entries as environment variables
-    load_dotenv(find_dotenv())
-
-    main()
+    # Clean up data
+    df = df[pd.notnull(df['NAICS Code'])]
+    df.columns = [c.replace(' ', '_') for c in df.columns]
+    df['NAICS_2_digit'] = df['NAICS_Code'].astype(str).str[:2]
