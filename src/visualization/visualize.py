@@ -49,3 +49,5 @@ def make_plot(src):
 
     p.scatter(x='B2R_score_noise', y='R2B_score_noise', fill_color='color', radius='radius',
               source=src)
+
+    return p
