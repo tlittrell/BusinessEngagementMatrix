@@ -30,13 +30,18 @@ def make_dataset(df, business_types=None, *, noise_low=0.25, noise_high=0.75, na
 
     return ColumnDataSource(df)
 
-
 def make_plot(src):
     tooltips = [
         ("index", "$index"),
         ("Business", "@Business_Name"),
-        ('Business to RVMS Score', "@B2R_score"),
-        ('RVMS to Business Score', "@R2B_score"),
+        ("R2B: Email sponsorship/promotion", "@R2B_email_sponsorship_promotion"),
+        ("R2B: Provide Resources", "@R2B_provide_resources"),
+        ("R2B: Liason", "@R2B_liason"),
+        ("B2R: Event participation", "@B2R_event_participation"),
+        ("B2R: Sponsorship/donation", "@B2R_sponsorship_donation"),
+        ("B2R: Share info", "@B2R_share_business_information"),
+        ("B2R: Volunteer", "@B2R_volunteer"),
+        ("Use RVMS resources", "@B2R_use_RVMS_resources"),
         ("Industry", "@2017_NAICS_US_Title"),
         ("NAICS Code", "@NAICS_Code"),
     ]
