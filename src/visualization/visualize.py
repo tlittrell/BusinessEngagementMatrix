@@ -4,8 +4,13 @@ from bokeh.palettes import viridis
 from bokeh.plotting import figure, ColumnDataSource
 
 
-def make_dataset(df, *, noise_low=0.25, noise_high=0.75, naics_digits=2, dot_radius=0.05):
+def make_dataset(df, business_types=None, *, noise_low=0.25, noise_high=0.75, naics_digits=2, dot_radius=0.05):
     df = df.copy()
+
+    if business_types is None:
+        pass
+    else:
+        df = df[df['2017_NAICS_US_Title'].isin(business_types)]
 
     # Calculate score
     n_rows = df.shape[0]
@@ -27,7 +32,7 @@ def make_dataset(df, *, noise_low=0.25, noise_high=0.75, naics_digits=2, dot_rad
 
 
 def make_plot(src):
-    TOOLTIPS = [
+    tooltips = [
         ("index", "$index"),
         ("Business", "@Business_Name"),
         ('Business to RVMS Score', "@B2R_score"),
@@ -37,7 +42,7 @@ def make_plot(src):
     ]
 
     p = figure(title="Business Engagement Matrix", x_axis_label='Business to RVMS', y_axis_label='RVMS to Business',
-               x_range=(0, 6), y_range=(0, 4), tooltips=TOOLTIPS)
+               x_range=(0, 6), y_range=(0, 4), tooltips=tooltips)
 
     # Ticks
     p.xaxis.ticker = FixedTicker(ticks=[1, 2, 3, 4, 5])
